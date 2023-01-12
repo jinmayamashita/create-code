@@ -1,3 +1,3 @@
 # Password generator
 
-A password generator feature is a tool that creates random, complex passwords for users to use when creating new accounts or changing their existing passwords. The generated passwords typically include a combination of letters, numbers, and special characters, and they are designed to be difficult for hackers to guess or crack. This feature can be found in many different types of software, including password managers, web browsers, and security software. The purpose of this feature is to help users create strong and unique passwords, which is important for protecting their online accounts and personal information.
+A password generator feature is a tool that creates random, complex passwords for users to use when creating new accounts or changing their existing passwords.
