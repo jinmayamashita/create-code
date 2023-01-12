@@ -72,8 +72,8 @@ async function run() {
               message: "Which library to choose for your app?",
               choices: [
                 { name: "react", message: "React" },
-                // { name: "vue", message: "Solid" },
-                // { name: "solid", message: "Vue.js" },
+                { name: "vue", message: "Vue.js" },
+                // { name: "solid", message: "Solid" },
                 // { name: "svelte", message: "Svelte" },
                 // { name: "nextjs", message: "Next.js" },
               ],
