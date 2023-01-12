@@ -21,6 +21,7 @@ const help = `
   Flags:
     --help, -h          Show this help message
     --version, -v       Show the version of this script
+    --library, -lib     Explicitly tell the CLI which libraries to use in the app
 `;
 
 async function run() {
@@ -28,7 +29,7 @@ async function run() {
     flags: {
       help: { type: "boolean", default: false, alias: "h" },
       mini: { type: "boolean", default: false, alias: "m" },
-      library: { type: "string", default: "react", alias: "lib" },
+      library: { type: "string", alias: "lib" },
       version: { type: "boolean", default: false, alias: "v" },
     },
   });
@@ -53,13 +54,39 @@ async function run() {
   );
 
   const appName = path.basename(appDir);
+
   fse.mkdirSync(appDir, { recursive: true });
 
   // Copy preview app
-  const appLibrary = "react-app";
-  const previewAppDir = path.resolve("../../..", "preview", appLibrary);
+  const uiLibrariesDir = path.resolve("../../..", "preview");
+  const uiLibraryDir = path.resolve(
+    uiLibrariesDir,
+    flags.library
+      ? `${flags.library}-app`
+      : `${
+          (
+            await Enquirer.prompt<{ uiLibrary: string }>({
+              type: "select",
+              name: "appLibrary",
+              initial: 0,
+              message: "Which library to choose for your app?",
+              choices: [
+                { name: "react", message: "React" },
+                // { name: "vue", message: "Solid" },
+                // { name: "solid", message: "Vue.js" },
+                // { name: "svelte", message: "Svelte" },
+                // { name: "nextjs", message: "Next.js" },
+              ],
+            })
+          ).uiLibrary
+        }-app`
+  );
 
-  fse.copySync(previewAppDir, appDir, {
+  if (!fse.readdirSync(uiLibrariesDir).includes(path.basename(uiLibraryDir))) {
+    throw Error("\nSorry, we do not support the library you typed.");
+  }
+
+  fse.copySync(uiLibraryDir, appDir, {
     filter: (src) => !["node_modules"].includes(path.basename(src)),
   });
 
@@ -82,7 +109,10 @@ async function success(appDir: string) {
   process.exit();
 }
 
-async function fail() {
+async function fail(error: Error) {
+  console.log(error.message);
+  if (!error.message) throw Error();
+
   process.exit(1);
 }
 
