@@ -1,0 +1,22 @@
+{
+  "name": "create-code-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "preview/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "prettier": "2.8.2",
+    "turbo": "1.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "packageManager": "pnpm@7.22.0"
+}
