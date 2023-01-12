@@ -127,7 +127,7 @@ async function run() {
     const moduleDir = path.join(modulesDir, module.name);
 
     // Copy selected modules
-    fse.copySync(moduleDir, appModulesDir, {
+    fse.copySync(moduleDir, path.join(appModulesDir, module.name), {
       filter: (src) =>
         ![
           "node_modules",
