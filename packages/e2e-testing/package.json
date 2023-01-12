@@ -1,0 +1,16 @@
+{
+  "name": "e2e-testing",
+  "private": true,
+  "scripts": {
+    "e2e:dev": "playwright test",
+    "e2e": "start-server-and-test \"(cd ../.. && ./node_modules/.bin/turbo run start --filter=@preview*)\" \"3000\" \"playwright test\""
+  },
+  "dependencies": {
+    "@playwright/test": "1.29.2",
+    "start-server-and-test": "1.15.2"
+  },
+  "devDependencies": {
+    "@preview/react-app": "workspace:*",
+    "@preview/vue-app": "workspace:*"
+  }
+}

@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run dev --parallel --filter=@preview**",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
