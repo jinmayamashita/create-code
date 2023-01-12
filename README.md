@@ -1,10 +1,19 @@
-# Create code monorepo
+# Create code monorepo (WIP)
 
 A tool or library that helps automate the process of creating code.
+Please refer to README in packages/create-code to to get CLI app working on your shell.
+
+Feel free to try!
 
 ## What's included?
 
-- `preview/react-app`: React with TypeScript
-- `packages/create-code`: A command line interface tool
-- `packages/tsconfig`: Shared TypeScript `tsconfig.json`
-- `packages/e2e-testing`: A package for testing preview apps workflow from beginning to end
+- `preview`
+  - `react-app`: React with TypeScript
+    - `modules`: React modules
+      - `password-generator`: A password generator module
+      - `toggle`: Simple toggle module
+  - `vue-app`: Vue with TypeScript
+- `packages`
+  - `create-code`: A command line interface tool
+  - `tsconfig`: Shared TypeScript `tsconfig.json`
+  - `e2e-testing`: A package for testing preview apps workflow from beginning to end
