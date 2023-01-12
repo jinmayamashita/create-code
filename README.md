@@ -1,15 +1,15 @@
 # Create code monorepo (WIP)
 
 A tool or library that helps automate the process of creating code.
-Please refer to README in packages/create-code to to get CLI app working on your shell.
+Please refer to [README](packages/create-code/README.md) in `packages/create-code` to to get CLI app working on your shell.
 
 Feel free to try!
 
 ## What's included?
 
-- `preview`
+- [`preview`](preview)
   - `react-app`: React with TypeScript
-    - `modules`: React modules
+    - [`modules`](preview/react-app/src/modules): React modules
       - `password-generator`: A password generator module
       - `toggle`: Simple toggle module
   - `vue-app`: Vue with TypeScript
