@@ -6,8 +6,10 @@ import Enquirer from "enquirer";
 import gradient from "gradient-string";
 import chalk from "chalk";
 import meow from "meow";
+import { REACT_APP_MODULES as modules } from "./constants";
+import { mergeDependencies } from "./mergeDependencies";
+import { getDependencies } from "./getDependencies";
 
-// helpers
 const welcome = async (title: string, desc: string) => {
   console.log(chalk.bold(gradient(["#9CECFB", "#65C7F7", "#0052D4"])(title)));
   await new Promise((resolve) => setTimeout(resolve, 500));
@@ -55,41 +57,143 @@ async function run() {
 
   const appName = path.basename(appDir);
 
+  // Make app directory
   fse.mkdirSync(appDir, { recursive: true });
 
-  // Copy preview app
+  const uiLibrary =
+    flags.library ||
+    (
+      await Enquirer.prompt<{ uiLibrary: string }>({
+        type: "select",
+        name: "uiLibrary",
+        initial: 0,
+        message: "Which library to choose for your app?",
+        choices: [
+          { name: "react", message: "React" },
+          { name: "vue", message: "Vue.js" },
+          // { name: "solid", message: "Solid" },
+          // { name: "svelte", message: "Svelte" },
+          // { name: "nextjs", message: "Next.js" },
+        ],
+      })
+    ).uiLibrary;
+
   const uiLibrariesDir = path.resolve(__dirname, "../../..", "preview");
-  const uiLibraryDir = path.resolve(
-    uiLibrariesDir,
-    flags.library
-      ? `${flags.library}-app`
-      : `${
-          (
-            await Enquirer.prompt<{ uiLibrary: string }>({
-              type: "select",
-              name: "uiLibrary",
-              initial: 0,
-              message: "Which library to choose for your app?",
-              choices: [
-                { name: "react", message: "React" },
-                { name: "vue", message: "Vue.js" },
-                // { name: "solid", message: "Solid" },
-                // { name: "svelte", message: "Svelte" },
-                // { name: "nextjs", message: "Next.js" },
-              ],
-            })
-          ).uiLibrary
-        }-app`
-  );
+  const uiLibraryDir = path.resolve(uiLibrariesDir, `${uiLibrary}-app`);
 
   if (!fse.readdirSync(uiLibrariesDir).includes(path.basename(uiLibraryDir))) {
     throw Error("\nSorry, we do not support the library you typed.");
   }
 
+  // Copy basic files from preview app
   fse.copySync(uiLibraryDir, appDir, {
     filter: (src) =>
-      !["node_modules", "dist", ".turbo"].includes(path.basename(src)),
+      ![
+        "node_modules",
+        "dist",
+        ".turbo",
+        "modules",
+        "pages",
+        "routes.tsx",
+        "context.tsx",
+        "package.json",
+        "tsconfig.json",
+      ].includes(path.basename(src)),
   });
+
+  const templatesDir = path.resolve(__dirname, "../templates");
+  const sharedDir = path.resolve(templatesDir, "_shared");
+
+  // Copy shared files
+  fse.copySync(sharedDir, appDir, {
+    overwrite: true,
+  });
+
+  const libraryTemplateDir = path.resolve(
+    templatesDir,
+    path.basename(uiLibraryDir)
+  );
+
+  // Copy library template files
+  fse.copySync(libraryTemplateDir, appDir);
+
+  // Rename gitignore
+  fse.renameSync(
+    path.join(appDir, "gitignore"),
+    path.join(appDir, ".gitignore")
+  );
+
+  const useModules =
+    // FIXME: For verification purposes, we are only temporarily working on modules of react.
+    uiLibrary === "react"
+      ? (
+          await Enquirer.prompt<{ modules: (keyof typeof modules)[] }>({
+            type: "multiselect",
+            name: "modules",
+            initial: 0,
+            message: "Which modules to choose for your app?",
+            choices: Object.entries(modules).map(([name, { message }]) => ({
+              name,
+              message,
+            })),
+          })
+        ).modules.map((module) => ({ name: module, ...modules[module] }))
+      : [];
+
+  const modulesDir = path.resolve(uiLibraryDir, "src", "modules");
+  const appModulesDir = path.resolve(appDir, "src", "modules");
+
+  const pagesDir = path.resolve(uiLibraryDir, "src", "pages");
+  const appPagesDir = path.resolve(appDir, "src", "pages");
+
+  useModules.forEach((module) => {
+    const moduleDir = path.join(modulesDir, module.name);
+
+    // Copy selected modules
+    fse.copySync(moduleDir, path.join(appModulesDir, module.name), {
+      filter: (src) =>
+        ![
+          "node_modules",
+          "dist",
+          ".turbo",
+          "package.json",
+          "tsconfig.json",
+          "README.md",
+        ].includes(path.basename(src)),
+    });
+
+    // Copy selected module pages
+    fse.copySync(pagesDir, appPagesDir, {
+      filter: (src) =>
+        ["pages", "home.tsx", ...module.pages].includes(path.basename(src)),
+    });
+  });
+
+  // Merge packages
+  const { dependencies, devDependencies } = mergeDependencies([
+    await getDependencies(uiLibraryDir),
+    ...(await Promise.all(
+      useModules.map((module) =>
+        getDependencies(path.join(modulesDir, module.name))
+      )
+    )),
+  ]);
+
+  // Overwrite package.json
+  const packageFile = path.join(appDir, "package.json");
+
+  fse.writeFileSync(
+    packageFile,
+    JSON.stringify(
+      JSON.parse(await fse.readFile(packageFile, "utf8"), (k, v) => {
+        if (k === "dependencies") return dependencies;
+        if (k === "devDependencies") return devDependencies;
+        return v;
+      }),
+      null,
+      2
+    )
+  );
 
   return appName;
 }

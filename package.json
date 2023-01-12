@@ -4,10 +4,12 @@
   "private": true,
   "workspaces": [
     "preview/*",
+    "preview/**/src/modules/*",
     "packages/*"
   ],
   "scripts": {
     "dev": "turbo run dev --parallel --filter=@preview**",
+    "test": "turbo run test --filter=@modules/*",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
