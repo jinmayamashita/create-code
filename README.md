@@ -2,7 +2,7 @@
 
 A tool or library that helps automate the process of creating code.
 
-Please refer to [README](packages/create-code/README.md) in `packages/create-code` to to get CLI app working on your shell.
+Please refer to [README in `packages/create-code`](packages/create-code/README.md) to to get CLI app working on your shell.
 
 Feel free to try!
 
