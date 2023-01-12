@@ -58,7 +58,7 @@ async function run() {
   fse.mkdirSync(appDir, { recursive: true });
 
   // Copy preview app
-  const uiLibrariesDir = path.resolve("../../..", "preview");
+  const uiLibrariesDir = path.resolve(__dirname, "../../..", "preview");
   const uiLibraryDir = path.resolve(
     uiLibrariesDir,
     flags.library
@@ -67,7 +67,7 @@ async function run() {
           (
             await Enquirer.prompt<{ uiLibrary: string }>({
               type: "select",
-              name: "appLibrary",
+              name: "uiLibrary",
               initial: 0,
               message: "Which library to choose for your app?",
               choices: [
