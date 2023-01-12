@@ -7,8 +7,9 @@ import gradient from "gradient-string";
 import chalk from "chalk";
 import meow from "meow";
 import { REACT_APP_MODULES as modules } from "./constants";
+import { mergeDependencies } from "./mergeDependencies";
+import { getDependencies } from "./getDependencies";
 
-// helpers
 const welcome = async (title: string, desc: string) => {
   console.log(chalk.bold(gradient(["#9CECFB", "#65C7F7", "#0052D4"])(title)));
   await new Promise((resolve) => setTimeout(resolve, 500));
@@ -167,6 +168,32 @@ async function run() {
         ["pages", "home.tsx", ...module.pages].includes(path.basename(src)),
     });
   });
+
+  // Merge packages
+  const { dependencies, devDependencies } = mergeDependencies([
+    await getDependencies(uiLibraryDir),
+    ...(await Promise.all(
+      useModules.map((module) =>
+        getDependencies(path.join(modulesDir, module.name))
+      )
+    )),
+  ]);
+
+  // Overwrite package.json
+  const packageFile = path.join(appDir, "package.json");
+
+  fse.writeFileSync(
+    packageFile,
+    JSON.stringify(
+      JSON.parse(await fse.readFile(packageFile, "utf8"), (k, v) => {
+        if (k === "dependencies") return dependencies;
+        if (k === "devDependencies") return devDependencies;
+        return v;
+      }),
+      null,
+      2
+    )
+  );
 
   return appName;
 }
