@@ -14,7 +14,7 @@ Feel free to try!
       - `password-generator`: A password generator module
       - `toggle`: Simple toggle module
   - `vue-app`: Vue with TypeScript
-- `packages`
-  - `create-code`: A command line interface tool
+- [`packages`](packages)
+  - [`create-code`](packages/create-code): A command line interface tool
   - `tsconfig`: Shared TypeScript `tsconfig.json`
   - `e2e-testing`: A package for testing preview apps workflow from beginning to end
