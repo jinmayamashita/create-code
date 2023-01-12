@@ -87,7 +87,8 @@ async function run() {
   }
 
   fse.copySync(uiLibraryDir, appDir, {
-    filter: (src) => !["node_modules"].includes(path.basename(src)),
+    filter: (src) =>
+      !["node_modules", "dist", ".turbo"].includes(path.basename(src)),
   });
 
   return appName;
