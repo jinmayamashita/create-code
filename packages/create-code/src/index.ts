@@ -100,6 +100,28 @@ async function run() {
       ].includes(path.basename(src)),
   });
 
+  const templatesDir = path.resolve(__dirname, "../templates");
+  const sharedDir = path.resolve(templatesDir, "_shared");
+
+  // Copy shared files
+  fse.copySync(sharedDir, appDir, {
+    overwrite: true,
+  });
+
+  const libraryTemplateDir = path.resolve(
+    templatesDir,
+    path.basename(uiLibraryDir)
+  );
+
+  // Copy library template files
+  fse.copySync(libraryTemplateDir, appDir);
+
+  // Rename gitignore
+  fse.renameSync(
+    path.join(appDir, "gitignore"),
+    path.join(appDir, ".gitignore")
+  );
+
   const useModules =
     // FIXME: For verification purposes, we are only temporarily working on modules of react.
     uiLibrary === "react"
