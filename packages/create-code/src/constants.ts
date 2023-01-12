@@ -3,7 +3,7 @@ export const REACT_APP_MODULES = {
     message: "Toggle",
     pages: ["toggle.tsx"],
   },
-  passwordGenerator: {
+  "password-generator": {
     message: "Password generator",
     pages: ["password.tsx"],
   },
