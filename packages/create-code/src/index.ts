@@ -59,29 +59,26 @@ async function run() {
   // Make app directory
   fse.mkdirSync(appDir, { recursive: true });
 
+  const uiLibrary =
+    flags.library ||
+    (
+      await Enquirer.prompt<{ uiLibrary: string }>({
+        type: "select",
+        name: "uiLibrary",
+        initial: 0,
+        message: "Which library to choose for your app?",
+        choices: [
+          { name: "react", message: "React" },
+          { name: "vue", message: "Vue.js" },
+          // { name: "solid", message: "Solid" },
+          // { name: "svelte", message: "Svelte" },
+          // { name: "nextjs", message: "Next.js" },
+        ],
+      })
+    ).uiLibrary;
+
   const uiLibrariesDir = path.resolve(__dirname, "../../..", "preview");
-  const uiLibraryDir = path.resolve(
-    uiLibrariesDir,
-    flags.library
-      ? `${flags.library}-app`
-      : `${
-          (
-            await Enquirer.prompt<{ uiLibrary: string }>({
-              type: "select",
-              name: "uiLibrary",
-              initial: 0,
-              message: "Which library to choose for your app?",
-              choices: [
-                { name: "react", message: "React" },
-                { name: "vue", message: "Vue.js" },
-                // { name: "solid", message: "Solid" },
-                // { name: "svelte", message: "Svelte" },
-                // { name: "nextjs", message: "Next.js" },
-              ],
-            })
-          ).uiLibrary
-        }-app`
-  );
+  const uiLibraryDir = path.resolve(uiLibrariesDir, `${uiLibrary}-app`);
 
   if (!fse.readdirSync(uiLibrariesDir).includes(path.basename(uiLibraryDir))) {
     throw Error("\nSorry, we do not support the library you typed.");
@@ -103,18 +100,22 @@ async function run() {
       ].includes(path.basename(src)),
   });
 
-  const useModules = (
-    await Enquirer.prompt<{ modules: (keyof typeof modules)[] }>({
-      type: "multiselect",
-      name: "modules",
-      initial: 0,
-      message: "Which modules to choose for your app?",
-      choices: Object.entries(modules).map(([name, { message }]) => ({
-        name,
-        message,
-      })),
-    })
-  ).modules.map((module) => ({ name: module, ...modules[module] }));
+  const useModules =
+    // FIXME: For verification purposes, we are only temporarily working on modules of react.
+    uiLibrary === "react"
+      ? (
+          await Enquirer.prompt<{ modules: (keyof typeof modules)[] }>({
+            type: "multiselect",
+            name: "modules",
+            initial: 0,
+            message: "Which modules to choose for your app?",
+            choices: Object.entries(modules).map(([name, { message }]) => ({
+              name,
+              message,
+            })),
+          })
+        ).modules.map((module) => ({ name: module, ...modules[module] }))
+      : [];
 
   const modulesDir = path.resolve(uiLibraryDir, "src", "modules");
   const appModulesDir = path.resolve(appDir, "src", "modules");
