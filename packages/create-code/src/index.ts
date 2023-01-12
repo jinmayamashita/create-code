@@ -6,6 +6,7 @@ import Enquirer from "enquirer";
 import gradient from "gradient-string";
 import chalk from "chalk";
 import meow from "meow";
+import { REACT_APP_MODULES as modules } from "./constants";
 
 // helpers
 const welcome = async (title: string, desc: string) => {
@@ -55,9 +56,9 @@ async function run() {
 
   const appName = path.basename(appDir);
 
+  // Make app directory
   fse.mkdirSync(appDir, { recursive: true });
 
-  // Copy preview app
   const uiLibrariesDir = path.resolve(__dirname, "../../..", "preview");
   const uiLibraryDir = path.resolve(
     uiLibrariesDir,
@@ -86,9 +87,62 @@ async function run() {
     throw Error("\nSorry, we do not support the library you typed.");
   }
 
+  // Copy basic files from preview app
   fse.copySync(uiLibraryDir, appDir, {
     filter: (src) =>
-      !["node_modules", "dist", ".turbo"].includes(path.basename(src)),
+      ![
+        "node_modules",
+        "dist",
+        ".turbo",
+        "modules",
+        "pages",
+        "routes.tsx",
+        "context.tsx",
+        "package.json",
+        "tsconfig.json",
+      ].includes(path.basename(src)),
+  });
+
+  const useModules = (
+    await Enquirer.prompt<{ modules: (keyof typeof modules)[] }>({
+      type: "multiselect",
+      name: "modules",
+      initial: 0,
+      message: "Which modules to choose for your app?",
+      choices: Object.entries(modules).map(([name, { message }]) => ({
+        name,
+        message,
+      })),
+    })
+  ).modules.map((module) => ({ name: module, ...modules[module] }));
+
+  const modulesDir = path.resolve(uiLibraryDir, "src", "modules");
+  const appModulesDir = path.resolve(appDir, "src", "modules");
+
+  const pagesDir = path.resolve(uiLibraryDir, "src", "pages");
+  const appPagesDir = path.resolve(appDir, "src", "pages");
+
+  useModules.forEach((module) => {
+    const moduleDir = path.join(modulesDir, module.name);
+
+    // Copy selected modules
+    fse.copySync(moduleDir, appModulesDir, {
+      filter: (src) =>
+        ![
+          "node_modules",
+          "dist",
+          ".turbo",
+          "package.json",
+          "tsconfig.json",
+          "README.md",
+        ].includes(path.basename(src)),
+    });
+
+    // Copy selected module pages
+    fse.copySync(pagesDir, appPagesDir, {
+      filter: (src) =>
+        ["pages", "home.tsx", ...module.pages].includes(path.basename(src)),
+    });
   });
 
   return appName;
