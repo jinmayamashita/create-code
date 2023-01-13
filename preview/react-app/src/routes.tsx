@@ -5,18 +5,10 @@ const Home = lazy(() => import("./pages/home"));
 const Toggle = lazy(() => import("./pages/toggle"));
 const Password = lazy(() => import("./pages/password"));
 
-export function Routes() {
-  return (
-    <Switch>
-      <Route path="/toggle">
-        <Toggle />
-      </Route>
-      <Route path="/password">
-        <Password />
-      </Route>
-      <Route path="/">
-        <Home />
-      </Route>
-    </Switch>
-  );
-}
+export const Routes = () => (
+  <Switch>
+    <Route path="/toggle" component={Toggle} />
+    <Route path="/password" component={Password} />
+    <Route path="/" component={Home} />
+  </Switch>
+);
