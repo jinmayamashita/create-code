@@ -9,6 +9,7 @@ import meow from "meow";
 import { REACT_APP_MODULES as modules } from "./constants";
 import { mergeDependencies } from "./mergeDependencies";
 import { getDependencies } from "./getDependencies";
+import { codemod } from "./codemod";
 
 const welcome = async (title: string, desc: string) => {
   console.log(chalk.bold(gradient(["#9CECFB", "#65C7F7", "#0052D4"])(title)));
@@ -94,7 +95,6 @@ async function run() {
         ".turbo",
         "modules",
         "pages",
-        "routes.tsx",
         "context.tsx",
         "package.json",
         "tsconfig.json",
@@ -167,6 +167,16 @@ async function run() {
       filter: (src) =>
         ["pages", "home.tsx", ...module.pages].includes(path.basename(src)),
     });
+  });
+
+  // Remove not used page in routes
+  const notUsedPages = [
+    ...Object.values(modules).flatMap((x) => x.pages),
+  ].filter((page) => !fse.readdirSync(appPagesDir).includes(page));
+
+  const routesFile = path.resolve(appDir, "src", "routes.tsx");
+  await codemod("remove-module-pages-from-routes", [routesFile], {
+    notUsedPages,
   });
 
   // Merge packages
