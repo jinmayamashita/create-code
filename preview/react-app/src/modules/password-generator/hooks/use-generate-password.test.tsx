@@ -1,10 +1,18 @@
 import { describe, test, expect } from "vitest";
+import { PropsWithChildren } from "react";
 import { act, renderHook } from "@testing-library/react";
-import { useGeneratePassword } from "./use-generate-password";
+import {
+  useGeneratePassword,
+  GeneratePassWordProvider,
+} from "./use-generate-password";
 
 describe("useGeneratePassword", () => {
   test("should generate password", () => {
-    const { result } = renderHook(useGeneratePassword);
+    const wrapper = ({ children }: PropsWithChildren) => (
+      <GeneratePassWordProvider>{children}</GeneratePassWordProvider>
+    );
+    const { result } = renderHook(() => useGeneratePassword(), { wrapper });
+
     expect(result.current[0]).toBe("");
 
     act(() => result.current[1]());
