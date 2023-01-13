@@ -78,6 +78,12 @@ importers:
       tsconfig: link:../../packages/tsconfig
       vite: 4.0.4
 
+  preview/react-app/src/modules/auth:
+    specifiers:
+      react: 18.2.0
+    dependencies:
+      react: 18.2.0
+
   preview/react-app/src/modules/password-generator:
     specifiers:
       '@testing-library/react': 13.4.0

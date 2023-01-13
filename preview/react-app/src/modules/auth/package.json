@@ -1,0 +1,8 @@
+{
+  "name": "@modules/auth",
+  "scripts": {},
+  "dependencies": {
+    "react": "18.2.0"
+  },
+  "devDependencies": {}
+}

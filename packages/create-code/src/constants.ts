@@ -7,4 +7,8 @@ export const REACT_APP_MODULES = {
     message: "Password generator",
     pages: ["password.tsx"],
   },
+  auth: {
+    message: "Authentication",
+    pages: ["login.tsx"],
+  },
 };
