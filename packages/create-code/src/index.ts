@@ -169,14 +169,19 @@ async function run() {
     });
   });
 
-  // Remove not used page in routes
-  const notUsedPages = [
-    ...Object.values(modules).flatMap((x) => x.pages),
-  ].filter((page) => !fse.readdirSync(appPagesDir).includes(page));
+  // Remove unused page in routes
+  const unusedModules = (Object.keys(modules) as [keyof typeof modules]).reduce(
+    (pre, cur) => {
+      if (useModules.find((useModule) => useModule.name === cur)) return pre;
+      return { ...pre, [cur]: modules[cur] };
+    },
+    {} as Partial<typeof modules>
+  );
 
   const routesFile = path.resolve(appDir, "src", "routes.tsx");
+
   await codemod("remove-module-pages-from-routes", [routesFile], {
-    notUsedPages,
+    notUsedPages: Object.values(unusedModules).flatMap((x) => x.pages),
   });
 
   // Merge packages
