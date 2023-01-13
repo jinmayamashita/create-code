@@ -11,8 +11,8 @@ Feel free to try!
 - [`preview`](preview)
   - `react-app`: React with TypeScript
     - [`modules`](preview/react-app/src/modules): React modules
-      - `password-generator`: A password generator module
-      - `toggle`: Simple toggle module
+      - `password-generator`: Example code of complex module.
+      - `toggle`: Just simple toggle module
   - `vue-app`: Vue with TypeScript
 - [`packages`](packages)
   - [`create-code`](packages/create-code): A command line interface tool
