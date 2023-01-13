@@ -9,6 +9,7 @@ import meow from "meow";
 import { REACT_APP_MODULES as modules } from "./constants";
 import { mergeDependencies } from "./mergeDependencies";
 import { getDependencies } from "./getDependencies";
+import { codemod } from "./codemod";
 
 const welcome = async (title: string, desc: string) => {
   console.log(chalk.bold(gradient(["#9CECFB", "#65C7F7", "#0052D4"])(title)));
@@ -94,8 +95,6 @@ async function run() {
         ".turbo",
         "modules",
         "pages",
-        "routes.tsx",
-        "context.tsx",
         "package.json",
         "tsconfig.json",
       ].includes(path.basename(src)),
@@ -167,6 +166,28 @@ async function run() {
       filter: (src) =>
         ["pages", "home.tsx", ...module.pages].includes(path.basename(src)),
     });
+  });
+
+  // Remove unused page in routes
+  const unusedModules = (Object.keys(modules) as [keyof typeof modules]).reduce(
+    (pre, cur) => {
+      if (useModules.find((useModule) => useModule.name === cur)) return pre;
+      return { ...pre, [cur]: modules[cur] };
+    },
+    {} as Partial<typeof modules>
+  );
+
+  const routesFile = path.resolve(appDir, "src", "routes.tsx");
+
+  await codemod("remove-module-pages-from-routes", [routesFile], {
+    notUsedPages: Object.values(unusedModules).flatMap((x) => x.pages),
+  });
+
+  // Remove unused providers
+  const contextFile = path.resolve(appDir, "src", "context.tsx");
+
+  await codemod("remove-unused-providers", [contextFile], {
+    notUsedProviders: Object.keys(unusedModules),
   });
 
   // Merge packages

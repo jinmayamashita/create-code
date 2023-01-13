@@ -7,32 +7,22 @@ const Toggle = lazy(() => import("./pages/toggle"));
 const Password = lazy(() => import("./pages/password"));
 const Login = lazy(() => import("./pages/login"));
 
-function UnauthenticatedRoutes() {
-  return (
-    <Switch>
-      <Route path="/login" component={Login} />
-      <Route component={() => <Redirect to="/login" />} />
-    </Switch>
-  );
-}
+const UnauthenticatedRoutes = () => (
+  <Switch>
+    <Route path="/login" component={Login} />
+    <Route component={() => <Redirect to="/login" />} />
+  </Switch>
+);
 
-function AuthenticatedRoutes() {
-  return (
-    <Switch>
-      <Route path="/toggle">
-        <Toggle />
-      </Route>
-      <Route path="/password">
-        <Password />
-      </Route>
-      <Route path="/">
-        <Home />
-      </Route>
-    </Switch>
-  );
-}
+const AuthenticatedRoutes = () => (
+  <Switch>
+    <Route path="/toggle" component={Toggle} />
+    <Route path="/password" component={Password} />
+    <Route path="/" component={Home} />
+  </Switch>
+);
 
-export function Routes() {
+export const Routes = () => {
   const { user } = useAuth();
   return !user ? <UnauthenticatedRoutes /> : <AuthenticatedRoutes />;
-}
+};

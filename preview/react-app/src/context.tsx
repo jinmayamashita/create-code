@@ -1,10 +1,11 @@
 import { PropsWithChildren } from "react";
 import { AuthProvider } from "./modules/auth";
+import { GeneratePassWordProvider } from "./modules/password-generator";
 
-export function AppProviders({ children }: PropsWithChildren) {
-  return (
+export const AppProviders = ({ children }: PropsWithChildren) => (
+  <>
     <AuthProvider>
-      <>{children}</>
+      <GeneratePassWordProvider>{children}</GeneratePassWordProvider>
     </AuthProvider>
-  );
-}
+  </>
+);
