@@ -1,0 +1,10 @@
+{
+  "name": "ui-react",
+  "main": "index.ts",
+  "types": "index.ts",
+  "devDependencies": {
+    "@types/react": "18.0.26",
+    "tsconfig": "workspace:*",
+    "typescript": "4.9.4"
+  }
+}
