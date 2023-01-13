@@ -183,6 +183,14 @@ async function run() {
     notUsedPages: Object.values(unusedModules).flatMap((x) => x.pages),
   });
 
+  // If you do not use the authentication function in the app
+  const isReact = uiLibrary === "react";
+  const useAuth = !!useModules.find(({ name }) => name === "auth");
+
+  isReact &&
+    !useAuth &&
+    (await codemod("remove-unauthenticated-routes", [routesFile]));
+
   // Remove unused providers
   const contextFile = path.resolve(appDir, "src", "context.tsx");
 

@@ -22,7 +22,9 @@ const AuthenticatedRoutes = () => (
   </Switch>
 );
 
-export const Routes = () => {
+const Routes = () => {
   const { user } = useAuth();
   return !user ? <UnauthenticatedRoutes /> : <AuthenticatedRoutes />;
 };
+
+export default Routes;

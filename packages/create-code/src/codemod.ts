@@ -1,7 +1,10 @@
 import * as path from "node:path";
 import { run as jscodeshift } from "jscodeshift/src/Runner";
 
-type Transforms = "remove-module-pages-from-routes" | "remove-unused-providers";
+type Transforms =
+  | "remove-module-pages-from-routes"
+  | "remove-unauthenticated-routes"
+  | "remove-unused-providers";
 
 export async function codemod(
   transformName: Transforms,
