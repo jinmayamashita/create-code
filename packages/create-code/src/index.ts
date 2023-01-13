@@ -95,7 +95,6 @@ async function run() {
         ".turbo",
         "modules",
         "pages",
-        "context.tsx",
         "package.json",
         "tsconfig.json",
       ].includes(path.basename(src)),
@@ -182,6 +181,13 @@ async function run() {
 
   await codemod("remove-module-pages-from-routes", [routesFile], {
     notUsedPages: Object.values(unusedModules).flatMap((x) => x.pages),
+  });
+
+  // Remove unused providers
+  const contextFile = path.resolve(appDir, "src", "context.tsx");
+
+  await codemod("remove-unused-providers", [contextFile], {
+    notUsedProviders: Object.keys(unusedModules),
   });
 
   // Merge packages
