@@ -1,11 +1,22 @@
 import { lazy } from "react";
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
+import { useAuth } from "./modules/auth";
 
 const Home = lazy(() => import("./pages/home"));
 const Toggle = lazy(() => import("./pages/toggle"));
 const Password = lazy(() => import("./pages/password"));
+const Login = lazy(() => import("./pages/login"));
 
-export function Routes() {
+function UnauthenticatedRoutes() {
+  return (
+    <Switch>
+      <Route path="/login" component={Login} />
+      <Route component={() => <Redirect to="/login" />} />
+    </Switch>
+  );
+}
+
+function AuthenticatedRoutes() {
   return (
     <Switch>
       <Route path="/toggle">
@@ -19,4 +30,9 @@ export function Routes() {
       </Route>
     </Switch>
   );
+}
+
+export function Routes() {
+  const { user } = useAuth();
+  return !user ? <UnauthenticatedRoutes /> : <AuthenticatedRoutes />;
 }

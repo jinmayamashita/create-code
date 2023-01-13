@@ -74,6 +74,12 @@ importers:
       tsconfig: link:../../packages/tsconfig
       vite: 4.0.4
 
+  preview/react-app/src/modules/auth:
+    specifiers:
+      react: 18.2.0
+    dependencies:
+      react: 18.2.0
+
   preview/react-app/src/modules/password-generator:
     specifiers:
       '@testing-library/react': 13.4.0
@@ -86,11 +92,11 @@ importers:
       vitest: 0.27.1
     dependencies:
       nanoid: 4.0.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     devDependencies:
       '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
       happy-dom: 8.1.3
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../../../../packages/tsconfig
       typescript: 4.9.4
       vitest: 0.27.1_happy-dom@8.1.3
@@ -104,11 +110,12 @@ importers:
       tsconfig: workspace:*
       typescript: 4.9.4
       vitest: 0.27.1
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     devDependencies:
       '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
       happy-dom: 8.1.3
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
       tsconfig: link:../../../../../packages/tsconfig
       typescript: 4.9.4
       vitest: 0.27.1_happy-dom@8.1.3
