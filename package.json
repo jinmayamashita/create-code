@@ -5,7 +5,8 @@
   "workspaces": [
     "preview/*",
     "preview/**/src/modules/*",
-    "packages/*"
+    "packages/*",
+    "docs/*"
   ],
   "scripts": {
     "dev": "turbo run dev --parallel --filter=@preview**",

@@ -1,0 +1,27 @@
+{
+  "name": "storybook-react",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "storybook dev -p 6006 --ci",
+    "build-storybook": "storybook build --docs",
+    "clean": "rm -rf .turbo && rm -rf node_modules"
+  },
+  "dependencies": {
+    "ui-react": "workspace:*"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "7.0.0-beta.13",
+    "@storybook/addon-links": "7.0.0-beta.13",
+    "@storybook/blocks": "7.0.0-beta.13",
+    "@storybook/react": "7.0.0-beta.13",
+    "@storybook/react-vite": "7.0.0-beta.13",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "storybook": "7.0.0-beta.13",
+    "tsconfig": "workspace:*",
+    "typescript": "4.9.4",
+    "vite": "4.0.2"
+  }
+}

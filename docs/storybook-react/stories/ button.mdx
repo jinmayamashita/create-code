@@ -1,0 +1,23 @@
+{/* refs. https://storybook.js.org/docs/7.0/react/writing-docs/docs-page */}
+
+import { Canvas, Meta, Story } from "@storybook/blocks";
+import * as ButtonStories from "./button.stories";
+
+<Meta of={ButtonStories} />
+
+# Button
+
+Button is a clickable interactive element that triggers a response.
+
+## Usage
+
+<Canvas withToolbar>
+  <Story of={ButtonStories.Basic} />
+</Canvas>
+
+## Inputs
+
+Button has the following properties:
+
+- `label` - The label of the button.
+- `onClick` - Callback function when clicked.
