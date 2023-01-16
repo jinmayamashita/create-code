@@ -10,7 +10,8 @@ Feel free to try!
 
 - [`examples`](examples)
   - `react (standard | mini)`: React with TypeScript
-  - `vue (standard | mini)`: Vue with TypeScript
+  - `vue (standard | mini)`: Vue.js with TypeScript
+  - `solid (standard | mini)`: SolidJS with TypeScript
 - [`modules`](modules)
   - `react/toggle`: Simple module for example.
   - `react/context`: A bit complicated module for example.
