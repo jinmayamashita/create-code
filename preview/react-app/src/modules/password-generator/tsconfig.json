@@ -1,7 +1,0 @@
-{
-  "extends": "tsconfig/react.json",
-  "exclude": ["node_modules"],
-  "compilerOptions": {
-    "lib": ["ES2015", "DOM"]
-  }
-}

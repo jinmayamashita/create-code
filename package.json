@@ -2,15 +2,10 @@
   "name": "create-code-monorepo",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "preview/*",
-    "preview/**/src/modules/*",
-    "packages/*",
-    "docs/*"
-  ],
   "scripts": {
     "dev": "turbo run dev --parallel --filter=@preview**",
-    "test": "turbo run test --filter=@modules/*",
+    "test:unit": "turbo run test --filter=./modules/*",
+    "test:e2e": "turbo e2e",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {

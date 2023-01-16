@@ -1,4 +1,3 @@
-import React from "react";
 import { usePassword } from "../contexts/use-password";
 
 export function PasswordGenerator() {

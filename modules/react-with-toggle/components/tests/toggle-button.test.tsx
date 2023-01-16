@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { act, render } from "@testing-library/react";
 import { ToggleButton } from "../toggle-button";
+import React from "react";
 
 describe("ToggleButton", () => {
   test("should toggle state", () => {

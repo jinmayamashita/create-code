@@ -3,14 +3,16 @@
   "private": true,
   "scripts": {
     "e2e:dev": "playwright test",
-    "e2e": "start-server-and-test \"(cd ../.. && ./node_modules/.bin/turbo run start --filter=@preview*)\" \"3000\" \"playwright test\""
+    "e2e": "start-server-and-test \"(cd ../.. && ./node_modules/.bin/turbo run start --filter=@examples*)\" \"3000\" \"playwright test\""
   },
   "dependencies": {
     "@playwright/test": "1.29.2",
     "start-server-and-test": "1.15.2"
   },
   "devDependencies": {
-    "@preview/react-app": "workspace:*",
-    "@preview/vue-app": "workspace:*"
+    "@examples/react-standard": "workspace:*",
+    "@examples/react-mini": "workspace:*",
+    "@examples/vue-standard": "workspace:*",
+    "@examples/vue-mini": "workspace:*"
   }
 }
