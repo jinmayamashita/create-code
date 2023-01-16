@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   PropsWithChildren,
   useCallback,
@@ -14,8 +14,8 @@ const sleep = (time: number) =>
 const getUser = () =>
   sleep(500)
     // TODO: Switching logins programmatically now
-    // .then(() => ({ username: "John Doe" }));
-    .then(() => null);
+    .then(() => ({ username: "John Doe" }));
+// .then(() => null);
 
 const AuthContext = createContext<{
   user: { username: string } | null;
@@ -27,11 +27,11 @@ function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<{ username: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    getUser()
-      .then((user) => setUser(user))
-      .then(() => setIsLoading(false));
-  }, []);
+  // useEffect(() => {
+  //   getUser()
+  //     .then((user) => setUser(user))
+  //     .then(() => setIsLoading(false));
+  // }, []);
 
   const login = useCallback(() => {
     setIsLoading(true);
