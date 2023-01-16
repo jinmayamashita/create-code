@@ -1,12 +1,12 @@
 {
-  "name": "react-standard",
+  "name": "@examples/react-standard",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port=3000",
+    "dev": "vite --port=3001",
     "build": "tsc && vite build",
-    "start": "vite preview --port=3000"
+    "start": "vite preview --port=3001"
   },
   "dependencies": {
     "react": "^18.2.0",

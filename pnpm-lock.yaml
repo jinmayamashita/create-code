@@ -180,20 +180,20 @@ importers:
 
   packages/e2e-testing:
     specifiers:
+      '@examples/react-mini': workspace:*
+      '@examples/react-standard': workspace:*
+      '@examples/vue-mini': workspace:*
+      '@examples/vue-standard': workspace:*
       '@playwright/test': 1.29.2
-      react-mini: workspace:*
-      react-standard: workspace:*
       start-server-and-test: 1.15.2
-      vue-mini: workspace:*
-      vue-standard: workspace:*
     dependencies:
       '@playwright/test': 1.29.2
       start-server-and-test: 1.15.2
     devDependencies:
-      react-mini: link:../../examples/react-mini
-      react-standard: link:../../examples/react-standard
-      vue-mini: link:../../examples/vue-mini
-      vue-standard: link:../../examples/vue-standard
+      '@examples/react-mini': link:../../examples/react-mini
+      '@examples/react-standard': link:../../examples/react-standard
+      '@examples/vue-mini': link:../../examples/vue-mini
+      '@examples/vue-standard': link:../../examples/vue-standard
 
   packages/tsconfig:
     specifiers: {}
