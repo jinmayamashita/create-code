@@ -10,7 +10,9 @@
     "start-server-and-test": "1.15.2"
   },
   "devDependencies": {
-    "@preview/react-app": "workspace:*",
-    "@preview/vue-app": "workspace:*"
+    "react-standard": "workspace:*",
+    "react-mini": "workspace:*",
+    "vue-standard": "workspace:*",
+    "vue-mini": "workspace:*"
   }
 }

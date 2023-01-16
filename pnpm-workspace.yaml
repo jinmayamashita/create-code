@@ -1,6 +1,4 @@
 packages:
-  - "preview/*"
-  - "preview/**/src/modules/*"
   - "packages/*"
   - "docs/*"
   - "examples/*"
