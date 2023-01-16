@@ -12,6 +12,7 @@ Feel free to try!
   - `react (standard | mini)`: React with TypeScript
   - `vue (standard | mini)`: Vue.js with TypeScript
   - `solid (standard | mini)`: SolidJS with TypeScript
+  - `next (standard | mini)`: Next.JS with TypeScript
 - [`modules`](modules)
   - `react/toggle`: Simple module for example.
   - `react/context`: A bit complicated module for example.
