@@ -3,3 +3,5 @@ packages:
   - "preview/**/src/modules/*"
   - "packages/*"
   - "docs/*"
+  - "examples/*"
+  - "modules/*"

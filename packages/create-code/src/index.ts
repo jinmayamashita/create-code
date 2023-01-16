@@ -2,29 +2,41 @@
 
 import * as path from "node:path";
 import fse from "fs-extra";
-import Enquirer from "enquirer";
-import gradient from "gradient-string";
-import chalk from "chalk";
 import meow from "meow";
-import { REACT_APP_MODULES as modules } from "./constants";
-import { mergeDependencies } from "./mergeDependencies";
-import { getDependencies } from "./getDependencies";
-import { codemod } from "./codemod";
+import inquirer from "inquirer";
+import chalk from "chalk";
+import gradient from "gradient-string";
 
-const welcome = async (title: string, desc: string) => {
-  console.log(chalk.bold(gradient(["#9CECFB", "#65C7F7", "#0052D4"])(title)));
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  console.log(chalk.hex("#0052D4")(desc));
-};
+type LibraryName = "react" | "vue" | "solid";
+
+const LIBRARIES = {
+  react: true,
+  vue: true,
+  solid: true,
+} as Record<LibraryName, true>;
+
+const MODULES = {
+  react: [
+    { name: "Toggle", value: "toggle", pages: [] },
+    { name: "Context", value: "context", pages: [] },
+  ],
+  vue: [{ name: "vue-toggle", value: "vue-toggle", pages: [] }],
+  solid: [{ name: "solid-toggle", value: "solid-toggle", pages: [] }],
+} as Record<LibraryName, { name: string; value: string; pages: string[] }[]>;
+
+const SHARED_FILES = path.resolve(__dirname, "..", "templates", "_shared");
+const TEMPLATES_DIR = path.resolve(__dirname, "..", "_templates");
+const APPS = path.resolve(TEMPLATES_DIR, "apps");
+const MODULES_DIR = path.resolve(TEMPLATES_DIR, "modules");
 
 const help = `
   Usage:
-    $ npx create-code [flags...] [<dir>]
-  If <dir> is not provided up front you will be prompted for it.
+    $ npx create-code [<dir>] [<lib>] [flags...]
   Flags:
+    --options, -o       You can select the modules you want use in with a prompt        
+    --mini, -m          Minimal modules
     --help, -h          Show this help message
     --version, -v       Show the version of this script
-    --library, -lib     Explicitly tell the CLI which libraries to use in the app
 `;
 
 async function run() {
@@ -32,191 +44,110 @@ async function run() {
     flags: {
       help: { type: "boolean", default: false, alias: "h" },
       mini: { type: "boolean", default: false, alias: "m" },
-      library: { type: "string", alias: "lib" },
       version: { type: "boolean", default: false, alias: "v" },
+      options: { type: "boolean", alias: "o" },
     },
   });
 
+  const [_dir, _lib = "react"] = input as [string, LibraryName];
+  const { mini: isMini, options: isOptions } = flags;
+
   await welcome(
-    "\n≛ Create code\n",
-    "Let's quickly start a development app with some base code!\n"
+    "\n≛ Create code\n"
+    // "Let's quickly start a development app with some base code!\n"
   );
 
-  const appDir = path.resolve(
+  const dir = path.resolve(
     process.cwd(),
-    input.length > 0
-      ? input[0]
+    _dir
+      ? _dir
       : (
-          await Enquirer.prompt<{ dir: string }>({
-            type: "input",
-            name: "dir",
-            initial: "./my-app",
-            message: "Where would you like to create your app?",
-          })
+          await inquirer.prompt<{ dir: string }>([
+            {
+              type: "input",
+              name: "dir",
+              message: "Where would you like to create your app?",
+              default: "./my-app",
+            },
+          ])
         ).dir
   );
 
-  const appName = path.basename(appDir);
+  const dirName = path.basename(dir);
 
-  // Make app directory
-  fse.mkdirSync(appDir, { recursive: true });
+  const lib = LIBRARIES[_lib]
+    ? _lib
+    : ((
+        await inquirer.prompt<{ lib: string }>([
+          {
+            type: "list",
+            name: "lib",
+            default: "react",
+            message: "Which library would you like to use?",
+            choices: [
+              { name: "React", value: "react" },
+              { name: "Vue.js", value: "vue" },
+            ],
+          },
+        ])
+      ).lib as LibraryName);
 
-  const uiLibrary =
-    flags.library ||
-    (
-      await Enquirer.prompt<{ uiLibrary: string }>({
-        type: "select",
-        name: "uiLibrary",
-        initial: 0,
-        message: "Which library to choose for your app?",
-        choices: [
-          { name: "react", message: "React" },
-          { name: "vue", message: "Vue.js" },
-          // { name: "solid", message: "Solid" },
-          // { name: "svelte", message: "Svelte" },
-          // { name: "nextjs", message: "Next.js" },
-        ],
-      })
-    ).uiLibrary;
+  const modules =
+    !isMini && isOptions
+      ? (
+          await inquirer.prompt<{ modules: string[] }>([
+            {
+              name: "modules",
+              type: "checkbox",
+              message: "Select the modules you want to use",
+              choices: MODULES[lib],
+              validate(answer) {
+                if (answer.length < 1) return "You must choose at least one.";
+                return true;
+              },
+            },
+          ])
+        ).modules
+      : MODULES[lib].map(({ value }) => value);
 
-  const uiLibrariesDir = path.resolve(__dirname, "../../..", "preview");
-  const uiLibraryDir = path.resolve(uiLibrariesDir, `${uiLibrary}-app`);
+  const moduleDirs = modules.map((module) =>
+    path.resolve(MODULES_DIR, `${lib}-with-${module}`)
+  );
 
-  if (!fse.readdirSync(uiLibrariesDir).includes(path.basename(uiLibraryDir))) {
-    throw Error("\nSorry, we do not support the library you typed.");
-  }
-
-  // Copy basic files from preview app
-  fse.copySync(uiLibraryDir, appDir, {
-    filter: (src) =>
-      ![
-        "node_modules",
-        "dist",
-        ".turbo",
-        "modules",
-        "pages",
-        "package.json",
-        "tsconfig.json",
-      ].includes(path.basename(src)),
-  });
-
-  const templatesDir = path.resolve(__dirname, "../templates");
-  const sharedDir = path.resolve(templatesDir, "_shared");
+  // Copy app
+  const appDir = path.resolve(APPS, `${lib}-${isMini ? "mini" : "standard"}`);
+  copyFiles(appDir, dir);
 
   // Copy shared files
-  fse.copySync(sharedDir, appDir, {
-    overwrite: true,
-  });
-
-  const libraryTemplateDir = path.resolve(
-    templatesDir,
-    path.basename(uiLibraryDir)
-  );
-
-  // Copy library template files
-  fse.copySync(libraryTemplateDir, appDir);
+  fse.copySync(SHARED_FILES, dir, { overwrite: true });
 
   // Rename gitignore
-  fse.renameSync(
-    path.join(appDir, "gitignore"),
-    path.join(appDir, ".gitignore")
-  );
+  fse.renameSync(path.join(dir, "gitignore"), path.join(dir, ".gitignore"));
 
-  const useModules =
-    // FIXME: For verification purposes, we are only temporarily working on modules of react.
-    uiLibrary === "react"
-      ? (
-          await Enquirer.prompt<{ modules: (keyof typeof modules)[] }>({
-            type: "multiselect",
-            name: "modules",
-            initial: 0,
-            message: "Which modules to choose for your app?",
-            choices: Object.entries(modules).map(([name, { message }]) => ({
-              name,
-              message,
-            })),
-          })
-        ).modules.map((module) => ({ name: module, ...modules[module] }))
-      : [];
+  // Copy modules
+  !isMini && copyModules(lib, modules, path.resolve(dir, "src", "modules"));
 
-  const modulesDir = path.resolve(uiLibraryDir, "src", "modules");
-  const appModulesDir = path.resolve(appDir, "src", "modules");
-
-  const pagesDir = path.resolve(uiLibraryDir, "src", "pages");
-  const appPagesDir = path.resolve(appDir, "src", "pages");
-
-  useModules.forEach((module) => {
-    const moduleDir = path.join(modulesDir, module.name);
-
-    // Copy selected modules
-    fse.copySync(moduleDir, path.join(appModulesDir, module.name), {
-      filter: (src) =>
-        ![
-          "node_modules",
-          "dist",
-          ".turbo",
-          "package.json",
-          "tsconfig.json",
-          "README.md",
-        ].includes(path.basename(src)),
-    });
-
-    // Copy selected module pages
-    fse.copySync(pagesDir, appPagesDir, {
-      filter: (src) =>
-        ["pages", "home.tsx", ...module.pages].includes(path.basename(src)),
-    });
-  });
-
-  // Remove unused page in routes
-  const unusedModules = (Object.keys(modules) as [keyof typeof modules]).reduce(
-    (pre, cur) => {
-      if (useModules.find((useModule) => useModule.name === cur)) return pre;
-      return { ...pre, [cur]: modules[cur] };
-    },
-    {} as Partial<typeof modules>
-  );
-
-  const routesFile = path.resolve(appDir, "src", "routes.tsx");
-
-  await codemod("remove-module-pages-from-routes", [routesFile], {
-    notUsedPages: Object.values(unusedModules).flatMap((x) => x.pages),
-  });
-
-  // If you do not use the authentication function in the app
-  const isReact = uiLibrary === "react";
-  const useAuth = !!useModules.find(({ name }) => name === "auth");
-
-  isReact &&
-    !useAuth &&
-    (await codemod("remove-unauthenticated-routes", [routesFile]));
-
-  // Remove unused providers
-  const contextFile = path.resolve(appDir, "src", "context.tsx");
-
-  await codemod("remove-unused-providers", [contextFile], {
-    notUsedProviders: Object.keys(unusedModules),
-  });
+  // Packages
+  // TOOO: Make it easy to understand
+  const basePackages = await getPackages(appDir);
 
   // Merge packages
-  const { dependencies, devDependencies } = mergeDependencies([
-    await getDependencies(uiLibraryDir),
-    ...(await Promise.all(
-      useModules.map((module) =>
-        getDependencies(path.join(modulesDir, module.name))
-      )
-    )),
+  // TOOO: Make it easy to understand
+  const pkgs = mergePackages([
+    basePackages,
+    ...(await Promise.all(moduleDirs.map((d) => getPackages(d)))),
   ]);
 
-  // Overwrite package.json
-  const packageFile = path.join(appDir, "package.json");
-
+  // Write package.json
+  // TOOO: Make it easy to understand
+  const packageFile = path.join(dir, "package.json");
   fse.writeFileSync(
-    packageFile,
+    path.join(dir, "package.json"),
     JSON.stringify(
       JSON.parse(await fse.readFile(packageFile, "utf8"), (k, v) => {
-        if (k === "dependencies") return dependencies;
-        if (k === "devDependencies") return devDependencies;
+        if (k === "name") return dirName;
+        if (k === "dependencies") return pkgs.dependencies;
+        if (k === "devDependencies") return pkgs.devDependencies;
         return v;
       }),
       null,
@@ -224,22 +155,104 @@ async function run() {
     )
   );
 
-  return appName;
+  // TODO: codemods
+
+  // console.log("- lib:", lib);
+  // console.log("- dir:", dir);
+  // console.log("- mini:", isMini);
+  // console.log("- modules:", modules);
+  // console.log("- modules dirs:", moduleDirs);
+  // console.log("- pkgs: ", JSON.stringify(pkgs, null, 2));
+
+  return dirName;
+}
+
+export async function getPackages(dirName: string) {
+  const packageFile = path.join(dirName, "package.json");
+
+  const { dependencies, devDependencies } = JSON.parse(
+    await fse.readFile(packageFile, "utf8"),
+    (k, v) => {
+      const excludes = ["vitest", "happy-dom", "@testing-library/react"];
+
+      if (v === "workspace:*") return;
+      if (excludes.includes(k)) return;
+
+      return v;
+    }
+  ) as {
+    dependencies: Record<string, string>;
+    devDependencies: Record<string, string>;
+  };
+
+  return {
+    dependencies,
+    devDependencies,
+  };
+}
+
+function mergePackages(
+  x: {
+    dependencies: Record<string, string>;
+    devDependencies: Record<string, string>;
+  }[]
+) {
+  let deps = {};
+  let devDeps = {};
+
+  x.forEach(({ dependencies, devDependencies }) => {
+    deps = { ...deps, ...dependencies };
+    devDeps = { ...devDeps, ...devDependencies };
+  });
+
+  return {
+    dependencies: deps,
+    devDependencies: devDeps,
+  };
+}
+
+async function copyFiles(sources: string, dest: string) {
+  const excludes = [
+    "node_modules",
+    "dist",
+    ".turbo",
+    "README.md",
+    "package.json",
+    "tsconfig.json",
+    "tests",
+  ];
+  const filter = (src: string) => !excludes.includes(path.basename(src));
+  fse.copySync(sources, dest, { filter });
+}
+
+async function copyModules(lib: string, modules: string[], dest: string) {
+  modules.forEach((module) => {
+    const moduleDir = `${lib}-with-${module}`;
+    const source = path.resolve(MODULES_DIR, moduleDir);
+
+    copyFiles(source, path.resolve(dest, module));
+  });
+}
+
+async function welcome(title: string, desc?: string) {
+  console.log(chalk.bold(gradient(["#9CECFB", "#65C7F7", "#0052D4"])(title)));
+  desc && console.log(chalk.hex("#65C7F7")(desc));
 }
 
 async function success(appDir: string) {
-  console.log(
-    `${chalk.bold(
-      gradient(["#0052D4", "#65C7F7", "#9CECFB"])("Success!")
-    )} Created a new app at "${appDir}".`
-  );
+  // console.log(
+  //   `${chalk.bold(
+  //     gradient(["#0052D4", "#65C7F7", "#9CECFB"])("Success!")
+  //   )} Created a new app at "${appDir}".`
+  // );
+  console.log(`Created a new app at "${appDir}".`);
   console.log("Inside this directory, you can run several commands:");
   console.log();
   console.log(chalk.cyan(`  pnpm dev`));
   console.log(`     Develop your app`);
   console.log();
   console.log(chalk.cyan(`  pnpm build`));
-  console.log(`     Build your app`);
+  console.log(`     Build your app\n`);
   process.exit();
 }
 
