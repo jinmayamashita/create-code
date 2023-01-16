@@ -1,5 +1,4 @@
 import { useToggle } from "../hooks/use-toggle";
-import React from "react";
 
 export function ToggleButton() {
   const [state, toggle] = useToggle();
