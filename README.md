@@ -8,12 +8,13 @@ Feel free to try!
 
 ## What's included?
 
-- [`preview`](preview)
-  - `react-app`: React with TypeScript
-    - [`modules`](preview/react-app/src/modules): React modules
-      - `password-generator`: Example code of complex module.
-      - `toggle`: Just simple toggle module
-  - `vue-app`: Vue with TypeScript
+- [`examples`](examples)
+  - `react (standard | mini)`: React with TypeScript
+  - `vue (standard | mini)`: Vue with TypeScript
+- [`modules`](modules)
+  - `react/toggle`: Simple module for example.
+  - `react/context`: A bit complicated module for example.
+  - `react/authentication`: Authentication module.
 - [`packages`](packages)
   - [`create-code`](packages/create-code): A command line interface tool
   - `tsconfig`: Shared TypeScript `tsconfig.json`
