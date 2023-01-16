@@ -1,11 +1,13 @@
 import * as path from "node:path";
 
-export type LibraryName = "react" | "vue" | "solid";
+export type LibraryName = "react" | "vue" | "solid" | "next" | "svelte";
 
 export const LIBRARIES = {
   react: true,
   vue: true,
   solid: true,
+  next: true,
+  svelte: true,
 } as Record<LibraryName, true>;
 
 export const MODULES = {
@@ -14,8 +16,10 @@ export const MODULES = {
     { name: "Context", value: "context", pages: [] },
     { name: "Authentication", value: "authentication", pages: [] },
   ],
-  vue: [{ name: "vue-toggle", value: "vue-toggle", pages: [] }],
-  solid: [{ name: "solid-toggle", value: "solid-toggle", pages: [] }],
+  vue: [],
+  solid: [],
+  next: [],
+  svelte: [],
 } as Record<LibraryName, { name: string; value: string; pages: string[] }[]>;
 
 export const SHARED_FILES = path.resolve(
