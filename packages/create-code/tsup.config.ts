@@ -10,6 +10,8 @@ const excludes = [
   // "package.json",
   "tsconfig.json",
   "tests",
+  ".next",
+  ".svelte-kit",
 ];
 
 async function copyTemplateFiles() {

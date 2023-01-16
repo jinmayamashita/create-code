@@ -10,9 +10,9 @@ Feel free to try!
 
 - [`examples`](examples)
   - `react (standard | mini)`: React with TypeScript
-  - `vue (standard | mini)`: Vue.js with TypeScript
-  - `solid (standard | mini)`: SolidJS with TypeScript
-  - `next (standard | mini)`: Next.JS with TypeScript
+  - `vue (standard | mini)`: Vue with TypeScript
+  - `solid (standard | mini)`: Solid with TypeScript
+  - `next (standard | mini)`: Next.js with TypeScript
   - `svelte (standard | mini)`: Svelte with TypeScript
 - [`modules`](modules)
   - `react/toggle`: Simple module for example.

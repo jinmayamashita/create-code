@@ -77,14 +77,19 @@ async function run() {
               message: "Which library would you like to use?",
               choices: [
                 { name: "React", value: "react" },
-                { name: "Vue.js", value: "vue" },
+                { name: "Vue", value: "vue" },
+                { name: "Next.js", value: "next" },
+                { name: "Solid", value: "solid" },
+                { name: "Svelte", value: "svelte" },
               ],
             },
           ])
         ).lib as LibraryName);
 
+  const libraryModules = MODULES[selectedLibrary];
+
   const selectedModules =
-    !isMini && isOptions
+    !isMini && isOptions && libraryModules.length
       ? (
           await inquirer.prompt<{ modules: string[] }>([
             {
@@ -99,7 +104,7 @@ async function run() {
             },
           ])
         ).modules
-      : MODULES[selectedLibrary].map(({ value }) => value);
+      : libraryModules.map(({ value }) => value);
 
   const moduleDirs = selectedModules.map((module) =>
     path.resolve(MODULES_DIR, `${selectedLibrary}-with-${module}`)
@@ -172,7 +177,7 @@ async function run() {
 
   // TODO: codemods
 
-  return appName;
+  return { dirName: appName, libraryName: selectedLibrary };
 }
 
 async function welcomeMessage(title: string, desc?: string) {
@@ -180,8 +185,14 @@ async function welcomeMessage(title: string, desc?: string) {
   desc && console.log(chalk.hex("#65C7F7")(desc));
 }
 
-async function success(dirName: string) {
-  console.log(`Created a new app at "${dirName}".`);
+async function success({
+  dirName,
+  libraryName,
+}: {
+  dirName: string;
+  libraryName: string;
+}) {
+  console.log(`Created a new app at "${dirName}" with ${libraryName}.`);
   console.log("Inside this directory, you can run several commands:");
   console.log();
   console.log(chalk.cyan(`  pnpm dev`));
