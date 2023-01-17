@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { Suspense } from "react";
+import Routes from "./routes";
 
 function App() {
-  return <div>React App</div>;
+  return (
+    <Suspense>
+      <Routes />
+    </Suspense>
+  );
 }
 
 export default App;
