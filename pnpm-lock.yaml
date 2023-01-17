@@ -92,9 +92,11 @@ importers:
       react-dom: ^18.2.0
       typescript: ^4.9.3
       vite: ^4.0.0
+      wouter: 2.10.0-alpha.4
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      wouter: 2.10.0-alpha.4_react@18.2.0
     devDependencies:
       '@types/react': 18.0.26
       '@types/react-dom': 18.0.10
@@ -111,9 +113,11 @@ importers:
       react-dom: ^18.2.0
       typescript: ^4.9.3
       vite: ^4.0.0
+      wouter: 2.10.0-alpha.4
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      wouter: 2.10.0-alpha.4_react@18.2.0
     devDependencies:
       '@types/react': 18.0.26
       '@types/react-dom': 18.0.10
@@ -10188,6 +10192,14 @@ packages:
     deprecated: Please see https://github.com/lydell/urix#deprecated
     dev: true
 
+  /use-sync-external-store/1.2.0_react@18.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /use/3.1.1:
     resolution: {integrity: sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==}
     engines: {node: '>=0.10.0'}
@@ -10716,6 +10728,15 @@ packages:
   /wordwrap/1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
     dev: true
+
+  /wouter/2.10.0-alpha.4_react@18.2.0:
+    resolution: {integrity: sha512-bD65aN3tgAayk6MDd4XJpcJYKBqp9DxgLufpEKBueWoDq+8smyYPewbjzSRXZ9uWFiqQ0/y/rCpttGr7hY680g==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
 
   /wrap-ansi/7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
