@@ -128,6 +128,20 @@ async function run() {
       path.resolve(appDir, "src", "modules")
     );
 
+  // Remove unused pages
+  if (selectedModules.length !== libraryModules.length) {
+    const unusedPages = libraryModules
+      .filter((x) => !selectedModules.includes(x.value))
+      .flatMap(({ pages }) => pages);
+
+    for (const page of unusedPages) {
+      await fse.remove(path.resolve(appDir, "src", "pages", `${page}.tsx`));
+    }
+  }
+
+  //TODO: routes
+  //TODO: context
+
   // Get base dependencies
   const baseDependencies = await getNpmDependencies(appTemplateDir);
 

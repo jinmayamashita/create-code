@@ -12,9 +12,9 @@ export const LIBRARIES = {
 
 export const MODULES = {
   react: [
-    { name: "Toggle", value: "toggle", pages: [] },
-    { name: "Context", value: "context", pages: [] },
-    { name: "Authentication", value: "authentication", pages: [] },
+    { name: "Toggle", value: "toggle", pages: ["toggle"] },
+    { name: "Context", value: "context", pages: ["update-password"] },
+    { name: "Authentication", value: "authentication", pages: ["login"] },
   ],
   vue: [],
   solid: [],
