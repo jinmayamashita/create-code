@@ -9,13 +9,14 @@ const transform: Transform = (
 ) => {
   const source = j(file.source);
 
-  (options.notUsedProviders as [string]).forEach((m) => {
+  (options.unusedModuleNames as [string]).forEach((m) => {
     // Finding all module import declarations
     let ProvidersComponents: string[] = [];
 
     const moduleImports = source
       .find(j.ImportDeclaration)
-      .filter((path) => path.node.source.value === `./modules/${m}`);
+      //FIXME: fix it later
+      .filter((path) => path.node.source.value === `react-with-${m}`);
 
     moduleImports.forEach((moduleImport) => {
       if (!moduleImport.node.specifiers) return;

@@ -1,5 +1,5 @@
 import { Transform, FileInfo, API } from "jscodeshift";
-
+import { toPascalCase } from "../helpers/to-pascal-case";
 export const parser = "tsx";
 
 const transform: Transform = (
@@ -9,8 +9,8 @@ const transform: Transform = (
 ) => {
   const source = j(file.source);
 
-  (options.notUsedPages as [string]).forEach((m) => {
-    const [PageComponent] = (m.charAt(0).toUpperCase() + m.slice(1)).split(".");
+  (options.unusedPages as [string]).forEach((unusedPageName) => {
+    const PageComponent = toPascalCase(unusedPageName);
 
     // Remove lazy import
     source.findVariableDeclarators(PageComponent).remove();
@@ -19,18 +19,14 @@ const transform: Transform = (
     source
       .findJSXElements("Route")
       .filter((path) => {
-        if (!path.node.openingElement.attributes) return false;
+        if (!path.node.children) return false;
 
-        return path?.node?.openingElement?.attributes?.some((attribute) => {
-          // type guards
-          if (attribute.type !== "JSXAttribute") return;
-          if (attribute.value?.type !== "JSXExpressionContainer") return;
-          if (attribute.value?.expression.type !== "Identifier") return;
+        return path?.node?.children?.some((x) => {
+          // Type guards
+          if (x.type !== "JSXElement") return;
+          if (x.openingElement.name.type !== "JSXIdentifier") return;
 
-          return (
-            attribute.name.name === "component" &&
-            attribute.value.expression.name == PageComponent
-          );
+          return x.openingElement.name.name === PageComponent;
         });
       })
       .remove();
