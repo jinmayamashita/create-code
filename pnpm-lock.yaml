@@ -111,12 +111,18 @@ importers:
       '@vitejs/plugin-react': ^3.0.0
       react: ^18.2.0
       react-dom: ^18.2.0
+      react-with-authentication: workspace:*
+      react-with-context: workspace:*
+      react-with-toggle: workspace:*
       typescript: ^4.9.3
       vite: ^4.0.0
       wouter: 2.10.0-alpha.4
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-with-authentication: link:../../modules/react-with-authentication
+      react-with-context: link:../../modules/react-with-context
+      react-with-toggle: link:../../modules/react-with-toggle
       wouter: 2.10.0-alpha.4_react@18.2.0
     devDependencies:
       '@types/react': 18.0.26

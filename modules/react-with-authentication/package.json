@@ -1,6 +1,6 @@
 {
   "name": "react-with-authentication",
-  "main": "inex.ts",
+  "main": "index.ts",
   "types": "index.ts",
   "scripts": {
     "test": "vitest run --environment=happy-dom"

@@ -11,7 +11,10 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "wouter": "2.10.0-alpha.4"
+    "wouter": "2.10.0-alpha.4",
+    "react-with-toggle": "workspace:*",
+    "react-with-context": "workspace:*",
+    "react-with-authentication": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
