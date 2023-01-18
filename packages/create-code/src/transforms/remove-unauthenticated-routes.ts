@@ -2,13 +2,19 @@ import { Transform, FileInfo, API } from "jscodeshift";
 
 export const parser = "tsx";
 
-const transform: Transform = (file: FileInfo, { jscodeshift: j }: API) => {
+const transform: Transform = (
+  file: FileInfo,
+  { jscodeshift: j }: API,
+  options
+) => {
   const source = j(file.source);
+  const moduleName = options.authenticationModuleName;
 
   // Remove module import
   source
     .find(j.ImportDeclaration)
-    .filter((path) => path.node.source.value === "./modules/auth")
+    //FIXME: fix it later
+    .filter((path) => path.node.source.value === `react-with-${moduleName}`)
     .remove();
 
   // Remove unused components

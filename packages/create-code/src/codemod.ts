@@ -6,24 +6,31 @@ type Transforms =
   | "remove-unauthenticated-routes"
   | "remove-unused-providers";
 
-export async function codemod(
-  transformName: Transforms,
-  filePaths: string[],
-  args?: Record<string, string[]>
-) {
+type Args = {
+  transform: Transforms;
+  filePath: string;
+  options: {
+    unusedPages?: string[];
+    unusedModuleNames?: string[];
+    authenticationModuleName?: string;
+  };
+};
+
+export async function codemod({ transform, filePath, options }: Args) {
   const transformFilePath = path.resolve(
     __dirname,
     "..",
     "src",
     "transforms",
-    `${transformName}.ts`
+    `${transform}.ts`
   );
 
-  await jscodeshift(transformFilePath, filePaths, {
+  await jscodeshift(transformFilePath, [filePath], {
     dry: false,
     print: false,
     babel: true,
     silent: true,
-    ...args,
+    // verbose: 2,
+    ...options,
   });
 }

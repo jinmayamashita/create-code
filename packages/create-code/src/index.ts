@@ -17,6 +17,7 @@ import {
   APPS,
   SHARED_FILES,
 } from "./constants";
+import { codemod } from "./codemod";
 
 const help = `
   Usage:
@@ -128,19 +129,44 @@ async function run() {
       path.resolve(appDir, "src", "modules")
     );
 
-  // Remove unused pages
+  const srcDir = path.resolve(appDir, "src");
+
   if (selectedModules.length !== libraryModules.length) {
-    const unusedPages = libraryModules
-      .filter((x) => !selectedModules.includes(x.value))
-      .flatMap(({ pages }) => pages);
+    // Remove unused page files
+    const unusedModules = libraryModules.filter(
+      (x) => !selectedModules.includes(x.value)
+    );
+
+    const unusedPages = unusedModules.flatMap(({ pages }) => pages);
+    const unusedModuleNames = unusedModules.map(({ value }) => value);
 
     for (const page of unusedPages) {
       await fse.remove(path.resolve(appDir, "src", "pages", `${page}.tsx`));
     }
+
+    // Remove unused imports and component codes in routes.tsx
+    await codemod({
+      transform: "remove-module-pages-from-routes",
+      filePath: path.resolve(srcDir, "routes.tsx"),
+      options: { unusedPages },
+    });
+
+    // Remove unused context codes in context.tsx
+    await codemod({
+      transform: "remove-unused-providers",
+      filePath: path.resolve(srcDir, "context.tsx"),
+      options: { unusedModuleNames },
+    });
   }
 
-  //TODO: routes
-  //TODO: context
+  // Reduce routes if authentication is not used in routes.tsx
+  if (!selectedModules.includes("authentication")) {
+    await codemod({
+      transform: "remove-unauthenticated-routes",
+      filePath: path.resolve(srcDir, "routes.tsx"),
+      options: { authenticationModuleName: "authentication" },
+    });
+  }
 
   // Get base dependencies
   const baseDependencies = await getNpmDependencies(appTemplateDir);
@@ -188,8 +214,6 @@ async function run() {
     path.join(appDir, "gitignore"),
     path.join(appDir, ".gitignore")
   );
-
-  // TODO: codemods
 
   return { dirName: appName, libraryName: selectedLibrary };
 }
