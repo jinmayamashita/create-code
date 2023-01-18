@@ -144,29 +144,45 @@ async function run() {
       await fse.remove(path.resolve(appDir, "src", "pages", `${page}.tsx`));
     }
 
-    // Remove unused imports and component codes in routes.tsx
+    // The following code only runs if selectedLibrary is `React` for now.
+    if (selectedLibrary !== "react") return;
+
+    // React: Remove unused imports and component codes in routes.tsx
     await codemod({
       transform: "remove-module-pages-from-routes",
-      filePath: path.resolve(srcDir, "routes.tsx"),
+      filePath: [path.resolve(srcDir, "routes.tsx")],
       options: { unusedPages },
     });
 
-    // Remove unused context codes in context.tsx
+    // React: Remove unused context codes in context.tsx
     await codemod({
       transform: "remove-unused-providers",
-      filePath: path.resolve(srcDir, "context.tsx"),
+      filePath: [path.resolve(srcDir, "context.tsx")],
       options: { unusedModuleNames },
     });
+
+    // React: Reduce routes if authentication is not used in routes.tsx
+    if (!selectedModules.includes("authentication")) {
+      await codemod({
+        transform: "remove-unauthenticated-routes",
+        filePath: [path.resolve(srcDir, "routes.tsx")],
+        options: { authenticationModuleName: "authentication" },
+      });
+    }
   }
 
-  // Reduce routes if authentication is not used in routes.tsx
-  if (!selectedModules.includes("authentication")) {
-    await codemod({
-      transform: "remove-unauthenticated-routes",
-      filePath: path.resolve(srcDir, "routes.tsx"),
-      options: { authenticationModuleName: "authentication" },
-    });
-  }
+  // Rename module import declarations
+  // Run only if selectedLibrary is `React` for now.
+  selectedLibrary === "react" &&
+    (await codemod({
+      transform: "rename-import-declarations",
+      filePath: [
+        path.resolve(srcDir, "routes.tsx"),
+        path.resolve(srcDir, "context.tsx"),
+        path.resolve(srcDir, "pages"),
+      ],
+      options: { library: selectedLibrary, moduleNames: selectedModules },
+    }));
 
   // Get base dependencies
   const baseDependencies = await getNpmDependencies(appTemplateDir);
