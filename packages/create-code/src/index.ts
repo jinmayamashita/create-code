@@ -119,11 +119,9 @@ async function run() {
   copyFiles(appTemplateDir, appDir);
 
   // Overwrite shared files
-  fse.copySync(path.resolve(TEMPLATE_FILES, "_shared"), appDir, {
-    overwrite: true,
-  });
-  fse.copySync(path.resolve(TEMPLATE_FILES, selectedLibrary), appDir, {
-    overwrite: true,
+  ["_shared", selectedLibrary].forEach((name) => {
+    const dir = path.resolve(TEMPLATE_FILES, name);
+    fse.copySync(dir, appDir, { overwrite: true });
   });
 
   // Copy modules
