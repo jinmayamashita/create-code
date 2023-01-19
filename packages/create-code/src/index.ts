@@ -15,7 +15,7 @@ import {
   MODULES,
   MODULES_DIR,
   APPS,
-  SHARED_FILES,
+  TEMPLATE_FILES,
 } from "./constants";
 import { codemod } from "./codemod";
 
@@ -119,7 +119,12 @@ async function run() {
   copyFiles(appTemplateDir, appDir);
 
   // Overwrite shared files
-  fse.copySync(SHARED_FILES, appDir, { overwrite: true });
+  fse.copySync(path.resolve(TEMPLATE_FILES, "_shared"), appDir, {
+    overwrite: true,
+  });
+  fse.copySync(path.resolve(TEMPLATE_FILES, selectedLibrary), appDir, {
+    overwrite: true,
+  });
 
   // Copy modules
   !isMini &&
