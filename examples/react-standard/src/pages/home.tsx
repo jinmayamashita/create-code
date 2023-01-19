@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ThemeToggle } from "../components/theme-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 function PageNavigation() {
   return (
