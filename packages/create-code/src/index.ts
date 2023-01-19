@@ -15,7 +15,7 @@ import {
   MODULES,
   MODULES_DIR,
   APPS,
-  SHARED_FILES,
+  TEMPLATE_FILES,
 } from "./constants";
 import { codemod } from "./codemod";
 
@@ -119,7 +119,10 @@ async function run() {
   copyFiles(appTemplateDir, appDir);
 
   // Overwrite shared files
-  fse.copySync(SHARED_FILES, appDir, { overwrite: true });
+  ["_shared", selectedLibrary].forEach((name) => {
+    const dir = path.resolve(TEMPLATE_FILES, name);
+    fse.copySync(dir, appDir, { overwrite: true });
+  });
 
   // Copy modules
   !isMini &&
@@ -131,7 +134,11 @@ async function run() {
 
   const srcDir = path.resolve(appDir, "src");
 
-  if (selectedModules.length !== libraryModules.length) {
+  // FIXME: Run only if selectedLibrary is `React` for now.
+  if (
+    selectedLibrary === "react" &&
+    selectedModules.length !== libraryModules.length
+  ) {
     // Remove unused page files
     const unusedModules = libraryModules.filter(
       (x) => !selectedModules.includes(x.value)
@@ -143,9 +150,6 @@ async function run() {
     for (const page of unusedPages) {
       await fse.remove(path.resolve(appDir, "src", "pages", `${page}.tsx`));
     }
-
-    // The following code only runs if selectedLibrary is `React` for now.
-    if (selectedLibrary !== "react") return;
 
     // React: Remove unused imports and component codes in routes.tsx
     await codemod({

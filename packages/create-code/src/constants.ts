@@ -22,12 +22,7 @@ export const MODULES = {
   svelte: [],
 } as Record<LibraryName, { name: string; value: string; pages: string[] }[]>;
 
-export const SHARED_FILES = path.resolve(
-  __dirname,
-  "..",
-  "templates",
-  "_shared"
-);
+export const TEMPLATE_FILES = path.resolve(__dirname, "..", "templates");
 
 // paths
 const TEMPLATES_DIR = path.resolve(__dirname, "..", "_templates");
