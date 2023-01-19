@@ -1,0 +1,10 @@
+{
+  "name": "viteconfig",
+  "main": "index.js",
+  "type": "module",
+  "types": "index.js",
+  "devDependencies": {
+    "@vitejs/plugin-react": "3.0.0",
+    "vite": "4.0.0"
+  }
+}
